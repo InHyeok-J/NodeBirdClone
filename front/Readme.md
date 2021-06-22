@@ -22,18 +22,19 @@
 -   Next.js의 라우팅  
     Next.js에서 pages라는 폴더를 인식을 해서 각 페이지를 라우팅을 할때에는 pages 폴더 안에 컴포넌트를 만들어주면 자동으로 라우팅이 된다.
 -   Next.js에서 Link  
-기존 react에서는 페이지를 이동할 때 `react-router-dom` 의 `<Link>` 을 사용해서 SPA 방식으로 페이지를 이동했지만 next에서는 `<Link>` 를 `next/link`에서 가져와서 쓴다.  
- ```javascript
+    기존 react에서는 페이지를 이동할 때 `react-router-dom` 의 `<Link>` 을 사용해서 SPA 방식으로 페이지를 이동했지만 next에서는 `<Link>` 를 `next/link`에서 가져와서 쓴다.
+
+```javascript
 <Link href="/">
 <a>노드버드</a>
-  </Link>
-  <Link href="/profile">
-        <a>프로필</a>
-  </Link>
-  <Link href="/signup">
-        <a>회원가입</a>
-  </Link>
-    ```
+ </Link>
+ <Link href="/profile">
+       <a>프로필</a>
+ </Link>
+ <Link href="/signup">
+       <a>회원가입</a>
+ </Link>
+```
 
 ---
 
@@ -51,7 +52,10 @@ npm i eslint-plugin-react-hooks -D
 npm i eslint-plugin-react -D
 ```
 
-이후 `.eslintrc` 파일을 프로젝트 폴더 루트쪽에 추가
+<br />
+
+이후 `.eslintrc` 파일을 프로젝트 폴더 루트쪽에 추가  
+<br />
 
 ```json
 {
@@ -77,6 +81,8 @@ npm i eslint-plugin-react -D
 > extends : 확장 설정  
 > env : 프로젝트 사용 환경  
 > plugins : 플러그인 적용
+
+<br />
 
 ---
 
@@ -129,7 +135,8 @@ NodeBird.propTypes = {
 export default NodeBird;
 ```
 
-Head 컴포넌트 안에 title 태그와 meta 태그를 설정해 줄 수 있다.
+Head 컴포넌트 안에 title 태그와 meta 태그를 설정해 줄 수 있다.  
+<br />
 
 ---
 
@@ -162,7 +169,8 @@ const style = useMemo(() => ({ marginTop: 10 }), []);
 
 useMemo -> 값을 저장하는데 useMemo를 사용해 리렌더링을 방지할 수 있다.
 
--   styled components로 설절한 스타일이 적용 안되는 문제.  
-    styled components로 설절한 스타일이 적용 안되는 문제가 발생하는데 서버사이드 렌더링 설정을 안해줘서 생기는 문제이다.
+-   styled components로 설절한 스타일이 적용 안되는 문제.
+
+styled components로 설절한 스타일이 적용 안되는 문제가 발생하는데 서버사이드 렌더링 설정을 안해줘서 생기는 문제이다.
 
 ---
