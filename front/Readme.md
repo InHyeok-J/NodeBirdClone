@@ -174,3 +174,54 @@ useMemo -> 값을 저장하는데 useMemo를 사용해 리렌더링을 방지할
 styled components로 설절한 스타일이 적용 안되는 문제가 발생하는데 서버사이드 렌더링 설정을 안해줘서 생기는 문제이다.
 
 ---
+
+### 이미지 업로드 시 Html input 태그가 아닌 버튼을 눌러서 하는 법
+
+```javascript
+const imageInput = useRef();
+
+const onClickImageUpload = useCallback(() => {
+        imageInput.current.click();
+    }, [imageInput.current]);
+
+...
+<input type="file" multiple hidden ref={imageInput} />
+<Button onClick={onClickImageUpload}>이미지 업로드</Button>
+```
+
+input 을 hidden으로 준 다음, ref을 통해 DOM에 접근, 버튼 클릭시 ref가 가리키는 돔을 click하게 한다.
+
+---
+
+### 정해져있는 클래스의 스타일 변경
+
+slick 같은 외부 라이브러리에는 이미 클래스가 적용되어있다.  
+이 slick의 스타일을 변경하기 위해서는 `style-component`의 `createGobalStyle`을 사용해서 스타일을 덮어씌운다.
+
+```javascript
+import {createGlobalStyle} from 'styled-components
+...
+const Global = createGlobalStyle`
+    .slick-slide{
+        display:inline-block;
+    }
+`; // 바꾸려고 하는 클래스명에 css를 넣어준다.
+return (
+	<>
+		<Global />
+		...
+	</>
+) // 이후 아무곳에나 적용시키면 스타일 적용.
+```
+
+### 폴더 구조 적용
+
+`styled-component`로 태그에 스타일을 많이 지정한 경우 파일의 코드 줄이 길어지고 가독성이 떨어짐.
+
+```
+/ImageZoom
+    Index.js
+    style.js
+```
+
+이렇게 폴더로 나눈 다음에 스타일드 컴포넌트로 작성한 부분을 style.js라는 파일에 저장한후 export 해서 Index에 가져와서 스타일과 Js부분을 분리시킨다.
