@@ -199,19 +199,20 @@ slick 같은 외부 라이브러리에는 이미 클래스가 적용되어있다
 이 slick의 스타일을 변경하기 위해서는 `style-component`의 `createGobalStyle`을 사용해서 스타일을 덮어씌운다.
 
 ```javascript
-import {createGlobalStyle} from 'styled-components
-...
+import { createGlobalStyle } from "styled-components";
+
 const Global = createGlobalStyle`
     .slick-slide{
         display:inline-block;
     }
 `; // 바꾸려고 하는 클래스명에 css를 넣어준다.
+
 return (
-	<>
-		<Global />
-		...
-	</>
-) // 이후 아무곳에나 적용시키면 스타일 적용.
+    <>
+        <Global />
+        ...
+    </>
+); // 이후 아무곳에나 적용시키면 스타일 적용.
 ```
 
 ### 폴더 구조 적용
@@ -225,3 +226,107 @@ return (
 ```
 
 이렇게 폴더로 나눈 다음에 스타일드 컴포넌트로 작성한 부분을 style.js라는 파일에 저장한후 export 해서 Index에 가져와서 스타일과 Js부분을 분리시킨다.
+
+### 해시태그 적용
+
+게시글에 있는 문자열 중에서 해시태그를 추출해서 링크를 달아야 한다.  
+`첫 번째 게시를 #해시태그 #익스프레스`이 문자열을 추출하기 위해 정규표현식 활용.
+`/#[^\s#]+/g` 을 사용하면 해시태그를 추출 가능하다.
+
+> /#[^\s#]+/g 을 사용하면 해시태그를 추출 가능하다.
+
+/g → global flags, 전체를 다 탐색
+
+[ ] → 문자 set, #[abc]라고 하면 #뒤에 abc문자열을 찾음.
+
+^ → 부정 의미 #[^abc]라고 하면 #뒤에 abc 문자열이 아닌 문자열 찾음.
+
+\s → 공백 문자 찾기 , #[^\s]라고 하면 #뒤에 공백문자가 아닌 것을 찾음
+
+#[^\s#] → #뒤에 공백문자와 태그가 아닌 것을 찾음.
+
+split에서는 해시태그 부분을 괄호로 감싸줘야지 포함이 된다.
+
+`/(#[^\s#]+)/g `
+
+```javascript
+const PostCardContent = ({ postData }) => {
+    // 첫 번째 게시를 #해시태그 #익스프레스
+    return (
+        <div>
+            {postData.split(/(#[^\s#]+)/g).map((v, index) => {
+                if (v.match(/(#[^\s#]+)/)) {
+                    return (
+                        <Link href={`/hashtage/${v.slice(1)}`} key={index}>
+                            <a>{v}</a>
+                        </Link>
+                    );
+                }
+                return v;
+            })}
+        </div>
+    );
+};
+```
+
+---
+
+### Immer으로 불변성 관리
+
+리액트에서는 불변성을 관리해줘야 한다. 이 불변성의 핵심은 바뀌는 것만 새로운 객체를 만들고 나머지 객체는
+참조를 유지해줘야 하는데,  
+댓글을 추가하는 리듀서에서
+
+```javascript
+case ADD_COMMENT_SUCCESS: {
+            const postIndex = state.mainPosts.findIndex(
+                (v) => v.id === action.data.postId
+            );
+            const post = { ...state.mainPosts[postIndex] };
+            post.Comments = [
+                dummyComment(action.data.content),
+                ...post.Comments,
+            ];
+            const mainPosts = [...state.mainPosts];
+            mainPosts[postIndex] = post;
+            return {
+                ...state,
+                mainPosts,
+                addCommentLoading: false,
+                addCommentDone: true,
+            };
+        }
+```
+
+1. action.data.postId와 같은 post를 찾아서 Index를 찾고.
+2. 그 post를 얕은 복사를 한다음,
+3. 그 post의 Comments에 불변성을 유지하면서 dummyComment를 추가한다음에 그거를 mainPost에 post에 넣는다.
+
+→ 이걸 좀더 편하게 할 수 있는 라이브러리가 immer이다.
+
+`npm i immer`
+
+```javascript
+import produce from "immer";
+
+return produce(state, (draft) => {
+    draft;
+});
+```
+
+리듀서는 불변성을 지키면서 이전 상태를 액션을 통해 다음 상태로 만드는 것인데 `immer`을 사용하면  
+draft라는 state를 불변성 상관없이 바꾼 후 immer가 불변성을 지켜준다.
+
+```javascript
+case ADD_COMMENT_SUCCESS: {
+        const post = draft.mainPosts.find(
+                (v) => v.id === action.data.postId
+         );
+        post.Comments.unshift(dummyComment(action.data.content));
+        draft.addCommentLoading = false;
+        draft.addPostDone = true;
+        break;
+ }
+```
+
+위 코드 처럼 간소화가 가능하다.
