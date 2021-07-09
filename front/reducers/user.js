@@ -13,6 +13,12 @@ const initialState = {
     changeNicknameLoading: false, // 닉네임 변경 시도중
     changeNicknameDone: false,
     changeNicknameError: null,
+    followLoading: false,
+    followDone: false,
+    followError: null,
+    unfollowLoading: false,
+    unfollowDone: false,
+    unfollowError: null,
     me: null,
     signUpData: {},
     loginData: {},
@@ -77,6 +83,36 @@ export const REMOVE_POST_OF_ME = "REMOVE_POST_OF_ME";
 const reducer = (state = initialState, action) => {
     return produce(state, (draft) => {
         switch (action.type) {
+            case FOLLOW_REQUEST:
+                draft.followLoading = true;
+                draft.followDone = false;
+                draft.followError = null;
+                break;
+            case FOLLOW_SUCCESS:
+                draft.followLoading = false;
+                draft.followDone = true;
+                draft.me.Followings.unshift({ id: action.data });
+                break;
+            case FOLLOW_FAILURE:
+                draft.followLoading = false;
+                draft.followError = action.error;
+                break;
+            case UNFOLLOW_REQUEST:
+                draft.unfollowLoading = true;
+                draft.unfollowDone = false;
+                draft.unfollowError = null;
+                break;
+            case UNFOLLOW_SUCCESS:
+                draft.unfollowLoading = false;
+                draft.unfollowDone = true;
+                draft.me.Followings = draft.me.Followings.filter(
+                    (v) => v.id !== action.data
+                );
+                break;
+            case UNFOLLOW_FAILURE:
+                draft.unfollowLoading = false;
+                draft.unfollowError = action.error;
+                break;
             case LOG_IN_REQUEST:
                 draft.loginLoading = true;
                 draft.loginDone = false;
