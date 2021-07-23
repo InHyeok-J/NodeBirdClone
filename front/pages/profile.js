@@ -16,6 +16,7 @@ const profile = () => {
         }
     }, [me && me.id]);
     if (!me) return null;
+
     return (
         <>
             <Head>

@@ -14,7 +14,7 @@ const ErrorMessage = styled.div`
 
 const signup = () => {
     const dispatch = useDispatch();
-    const { signUpLoading, signUpDone, signUpError } = useSelector(
+    const { signUpLoading, signUpDone, signUpError, me } = useSelector(
         (state) => state.user
     );
 
@@ -54,9 +54,15 @@ const signup = () => {
     }, [email, password, passwordCheck, term]);
 
     useEffect(() => {
+        if (me && me.id) {
+            Router.replace("/");
+        }
+    }, [me && me.id]);
+
+    useEffect(() => {
         if (signUpDone) {
             alert("회원가입 성공");
-            Router.push("/");
+            Router.replace("/");
         }
     }, [signUpDone]);
 
@@ -65,6 +71,7 @@ const signup = () => {
             alert(signUpError);
         }
     }, [signUpError]);
+
     return (
         <AppLayout>
             <Head>

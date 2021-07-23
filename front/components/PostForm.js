@@ -13,7 +13,7 @@ const PostForm = () => {
 
     const onSubmit = useCallback(() => {
         console.log(text);
-        dispatch(addPost(text));
+        dispatch(addPost({ content: text }));
         setText;
     }, [text]);
 

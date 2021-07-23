@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PostForm from "../components/PostForm";
 import PostCard from "../components/PostCard";
 import { LOAD_POSTS_REQUEST } from "../reducers/post";
+import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
 const Home = () => {
     const dispatch = useDispatch();
 
@@ -11,7 +12,11 @@ const Home = () => {
     const { mainPosts, hasMorePosts, loadPostLoading } = useSelector(
         (state) => state.post
     );
+    console.log(mainPosts);
     useEffect(() => {
+        dispatch({
+            type: LOAD_MY_INFO_REQUEST,
+        });
         dispatch({
             type: LOAD_POSTS_REQUEST,
         });
@@ -19,11 +24,6 @@ const Home = () => {
 
     useEffect(() => {
         function onScroll() {
-            console.log(
-                window.scrollY,
-                document.documentElement.clientHeight,
-                document.documentElement.scrollHeight
-            );
             if (
                 window.scrollY + document.documentElement.clientHeight >
                 document.documentElement.scrollHeight - 300
@@ -44,9 +44,8 @@ const Home = () => {
     return (
         <AppLayout>
             {me && <PostForm />}
-            {mainPosts.map((post) => (
-                <PostCard key={post.id} post={post} />
-            ))}
+            {me &&
+                mainPosts.map((post) => <PostCard key={post.id} post={post} />)}
         </AppLayout>
     );
 };

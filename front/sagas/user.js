@@ -15,6 +15,9 @@ import {
     UNFOLLOW_REQUEST,
     UNFOLLOW_SUCCESS,
     UNFOLLOW_FAILURE,
+    LOAD_MY_INFO_REQUEST,
+    LOAD_MY_INFO_SUCCESS,
+    LOAD_MY_INFO_FAILURE,
 } from "../reducers/user";
 import * as userApi from "../api/userApi";
 
@@ -24,14 +27,14 @@ import * as userApi from "../api/userApi";
 
 function* login(action) {
     try {
-        // const result = yield call(loginAPI);
-        yield delay(1000);
-
+        const result = yield call(userApi.LoginApi, action.data);
+        console.log(result);
         yield put({
             type: LOG_IN_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
+        console.error(err);
         yield put({
             type: LOG_IN_FAILURE,
             error: err.response.data,
@@ -40,8 +43,7 @@ function* login(action) {
 }
 function* logOut() {
     try {
-        // const result = yield call(loginAPI);
-        yield delay(1000);
+        const result = yield call(userApi.LogOutApi);
         yield put({
             type: LOG_OUT_SUCCESS,
         });
@@ -96,6 +98,21 @@ function* unFollow(action) {
     }
 }
 
+function* loadMyInfo(action) {
+    try {
+        const result = yield call(userApi.LoadMyInfoApi);
+        yield put({
+            type: LOAD_MY_INFO_SUCCESS,
+            data: result.data,
+        });
+    } catch {
+        yield put({
+            type: LOAD_MY_INFO_FAILURE,
+            error: err.response.data,
+        });
+    }
+}
+
 function* watchLogin() {
     yield takeLatest(LOG_IN_REQUEST, login);
 }
@@ -111,6 +128,9 @@ function* watchFllow() {
 function* watchUnFollow() {
     yield takeLatest(UNFOLLOW_REQUEST, unFollow);
 }
+function* watchLoadMyInfo() {
+    yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
+}
 export default function* userSaga() {
     yield all([
         fork(watchLogin),
@@ -118,5 +138,6 @@ export default function* userSaga() {
         fork(watchSignUp),
         fork(watchFllow),
         fork(watchUnFollow),
+        fork(watchLoadMyInfo),
     ]);
 }

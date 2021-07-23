@@ -1,6 +1,9 @@
 import produce from "immer";
 
 const initialState = {
+    loadMyInfoLoading: false,
+    loadMyInfoDone: false,
+    loadMyInfoError: null,
     loginLoading: false, //로그인시도중
     loginDone: false,
     loginError: null,
@@ -24,23 +27,6 @@ const initialState = {
     loginData: {},
 };
 
-const dummyUser = (data) => ({
-    ...data,
-    nickname: "제로초",
-    id: 1,
-    Posts: [{ id: 1 }],
-    Followings: [
-        { nickname: "부기초" },
-        { nickname: "Chanho Lee" },
-        { nickname: "hoin" },
-    ],
-    Followers: [
-        { nickname: "부기초" },
-        { nickname: "Chanho Lee" },
-        { nickname: "hoin" },
-    ],
-});
-
 export const loginRequestAction = (data) => {
     return {
         type: "LOG_IN_REQUEST",
@@ -52,6 +38,9 @@ export const logoutRequestAction = () => {
         type: "LOG_OUT_REQUEST",
     };
 };
+export const LOAD_MY_INFO_REQUEST = "LOAD_MY_INFO_REQUEST";
+export const LOAD_MY_INFO_SUCCESS = "LOAD_MY_INFO_SUCCESS";
+export const LOAD_MY_INFO_FAILURE = "LOAD_MY_INFO_FAILURE";
 
 export const LOG_IN_REQUEST = "LOG_IN_REQUEST";
 export const LOG_IN_SUCCESS = "LOG_IN_SUCCESS";
@@ -121,7 +110,7 @@ const reducer = (state = initialState, action) => {
             case LOG_IN_SUCCESS:
                 draft.loginLoading = false;
                 draft.loginDone = true;
-                draft.me = dummyUser(action.data);
+                draft.me = action.data;
                 break;
             case LOG_IN_FAILURE:
                 draft.loginLoading = false;
@@ -181,6 +170,20 @@ const reducer = (state = initialState, action) => {
                 draft.me.Posts = draft.me.Posts.filter(
                     (v) => v.id !== action.data
                 );
+                break;
+            case LOAD_MY_INFO_REQUEST:
+                draft.loadMyInfoLoading = true;
+                draft.loadMyInfoDone = false;
+                draft.loadMyInfoError = null;
+                break;
+            case LOAD_MY_INFO_SUCCESS:
+                draft.loadMyInfoLoading = false;
+                draft.loadMyInfoDone = true;
+                draft.me = action.data;
+                break;
+            case LOAD_MY_INFO_FAILURE:
+                draft.loadMyInfoLoading = false;
+                draft.loadMyInfoError = action.error;
                 break;
             default:
                 break;
