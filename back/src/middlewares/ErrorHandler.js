@@ -1,5 +1,5 @@
 export const logHandler = (err, req, res, next) => {
-    console.error("[" + new Date() + "]\n" + err.stack);
+    console.error("LogHandler" + "[" + new Date() + "]\n" + err.stack);
     next(err);
 };
 
@@ -18,6 +18,7 @@ export const errorHandler = (err, req, res, next) => {
                 // Explicitly pull Error's non-enumerable properties
                 name: value.name,
                 message: value.message,
+                status: value.status,
             };
         }
 

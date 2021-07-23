@@ -1,5 +1,42 @@
 import db from "../models";
+import passport from "passport";
 import bcrypt from "bcrypt";
+
+export const GetUser = async (req, res, next) => {
+    try {
+        if (req.user) {
+            const user = await db.User.findOne({
+                where: { id: req.user.id },
+            });
+            const fullUserWithoutPassword = await db.User.findOne({
+                where: { id: user.id },
+                attributes: { exclude: ["password"] },
+                include: [
+                    {
+                        model: db.Post,
+                        attributes: ["id"],
+                    },
+                    {
+                        model: db.User,
+                        as: "Followings",
+                        attributes: ["id"],
+                    },
+                    {
+                        model: db.User,
+                        as: "Followers",
+                        attributes: ["id"],
+                    },
+                ],
+            });
+            res.status(200).json(fullUserWithoutPassword);
+        } else {
+            res.status(200).json(null);
+        }
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
 
 export const SignUp = async (req, res, next) => {
     try {
@@ -23,4 +60,63 @@ export const SignUp = async (req, res, next) => {
         console.error(err);
         next(err);
     }
+};
+
+export const Login = (req, res, next) => {
+    //미들웨어 확장.
+
+    passport.authenticate("local", (err, user, info) => {
+        //info -> Client error
+        console.log("authenticate");
+        if (err) {
+            console.error(err);
+            return next(err);
+        }
+        if (info) {
+            return res.status(401).send(info.message); //401: 허가되지 않음.
+        }
+        if (!user) return res.send("유저가 없습니다.");
+        req.login(user, async (err) => {
+            //passport login 시도 -> session에 저장함.
+            if (err) {
+                //passport login에서 에러가 나는 경우.(제로초말로는 한번도 본적없음.)
+                console.error(err);
+                return next(err);
+            }
+            const fullUserWithoutPassword = await db.User.findOne({
+                where: { id: user.id },
+                attributes: { exclude: ["password"] },
+                include: [
+                    {
+                        model: db.Post,
+                        attributes: ["id"],
+                    },
+                    {
+                        model: db.User,
+                        as: "Followings",
+                        attributes: ["id"],
+                    },
+                    {
+                        model: db.User,
+                        as: "Followers",
+                        attributes: ["id"],
+                    },
+                ],
+            });
+            return res.send(fullUserWithoutPassword);
+        });
+    })(req, res, next);
+};
+
+export const LogOut = (req, res, next) => {
+    req.logout();
+    req.session.destroy((err) => {
+        if (err) {
+            console.error(err);
+            next(err);
+        } else {
+            res.clearCookie("connect.sid");
+            res.status(200).send("로그아웃 성공");
+        }
+    });
 };
