@@ -18,11 +18,11 @@ model User {
   createdAt DateTime  @default(now())
   updateAt  DateTime? @updatedAt
 
-  follower  User[]    @relation("UserFollow", references: [id])
-  following User[]    @relation("UserFollow", references: [id])
-  posts     Post[]
-  comments  Comment[]
-  liker     Like[]
+  Followers  User[]    @relation("UserFollow", references: [id])
+  Followings User[]    @relation("UserFollow", references: [id])
+  Posts      Post[]
+  Comments   Comment[]
+  Liker      Like[]
 
   @@map(name: "users")
 }
@@ -32,16 +32,16 @@ model Post {
   content         String   @db.Text
   createdAt       DateTime @default(now())
   updateAt        DateTime @updatedAt
-  author          User     @relation(fields: [userId], references: [id])
-  userId          Int
-  retweetedPost   Post?    @relation("Retweet", fields: [retweetedPostId], references: [id])
-  retweetedPostId Int?
+  author          User     @relation(fields: [UserId], references: [id])
+  UserId          Int
+  retweetedPost   Post?    @relation("Retweet", fields: [RetweetedPostId], references: [id])
+  RetweetedPostId Int?
 
   retweeterPost Post[]       @relation("Retweet")
-  comments      Comment[]
-  images        Image[]
-  hashtags      PostHastag[]
-  liker         Like[]
+  Comments      Comment[]
+  Images        Image[]
+  Hashtags      PostHastag[]
+  Liker         Like[]
 
   @@map(name: "posts")
 }
@@ -52,11 +52,11 @@ model Comment {
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 
-  commenter   User @relation(fields: [userId], references: [id])
-  postComment Post @relation(fields: [postId], references: [id])
+  commenter   User @relation(fields: [UserId], references: [id])
+  postComment Post @relation(fields: [PostId], references: [id])
 
-  userId Int
-  postId Int
+  UserId Int
+  PostId Int
 
   @@map(name: "commets")
 }
@@ -67,8 +67,8 @@ model Image {
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 
-  postImage Post @relation(fields: [postId], references: [id])
-  postId    Int
+  postImage Post @relation(fields: [PostId], references: [id])
+  PostId    Int
 
   @@map(name: "images")
 }
@@ -78,29 +78,29 @@ model Hashtag {
   name      String       @db.VarChar(20)
   createdAt DateTime     @default(now())
   updateAt  DateTime     @updatedAt
-  posts     PostHastag[]
+  Posts     PostHastag[]
 
   @@map(name: "hastages")
 }
 
 model PostHastag {
-  post      Post     @relation(fields: [postId], references: [id])
-  hashtag   Hashtag  @relation(fields: [hashtagId], references: [id])
-  postId    Int
-  hashtagId Int
+  post      Post     @relation(fields: [PostId], references: [id])
+  hashtag   Hashtag  @relation(fields: [HashtagId], references: [id])
+  PostId    Int
+  HashtagId Int
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 
-  @@id([postId, hashtagId])
+  @@id([PostId, HashtagId])
   @@map(name: "posthastags")
 }
 
 model Like {
-  user   User @relation(fields: [userId], references: [id])
-  post   Post @relation(fields: [postId], references: [id])
-  postId Int
-  userId Int
+  user   User @relation(fields: [UserId], references: [id])
+  post   Post @relation(fields: [PostId], references: [id])
+  PostId Int
+  UserId Int
 
-  @@id([postId, userId])
+  @@id([PostId, UserId])
   @@map(name: "like")
 }
