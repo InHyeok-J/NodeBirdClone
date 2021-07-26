@@ -18,6 +18,18 @@ import {
     LOAD_MY_INFO_REQUEST,
     LOAD_MY_INFO_SUCCESS,
     LOAD_MY_INFO_FAILURE,
+    CHANGE_NICKNAME_REQUEST,
+    CHANGE_NICKNAME_SUCCESS,
+    CHANGE_NICKNAME_FAILURE,
+    LOAD_FOLLOWERS_REQUEST,
+    LOAD_FOLLOWINGS_REQUEST,
+    LOAD_FOLLOWERS_FAILURE,
+    LOAD_FOLLOWERS_SUCCESS,
+    LOAD_FOLLOWINGS_SUCCESS,
+    LOAD_FOLLOWINGS_FAILURE,
+    REMOVE_FOLLOWER_REQUEST,
+    REMOVE_FOLLOWER_FAILURE,
+    REMOVE_FOLLOWER_SUCCESS,
 } from "../reducers/user";
 import * as userApi from "../api/userApi";
 
@@ -27,6 +39,7 @@ import * as userApi from "../api/userApi";
 
 function* login(action) {
     try {
+        console.log("sagalogin", action.data);
         const result = yield call(userApi.LoginApi, action.data);
         console.log(result);
         yield put({
@@ -48,6 +61,7 @@ function* logOut() {
             type: LOG_OUT_SUCCESS,
         });
     } catch (err) {
+        console.error(err);
         yield put({
             type: LOG_OUT_FAILURE,
             error: err.response.data,
@@ -62,6 +76,7 @@ function* signUp(action) {
             type: SIGN_UP_SUCCESS,
         });
     } catch (err) {
+        console.error(err);
         yield put({
             type: SIGN_UP_FAILURE,
             error: err.response.data,
@@ -71,12 +86,13 @@ function* signUp(action) {
 
 function* follow(action) {
     try {
-        yield delay(1000);
+        const result = yield call(userApi.followApi, action.data);
         yield put({
             type: FOLLOW_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
+        console.error(err);
         yield put({
             type: FOLLOW_FAILURE,
             error: err.response.data,
@@ -85,12 +101,13 @@ function* follow(action) {
 }
 function* unFollow(action) {
     try {
-        yield delay(1000);
+        const result = yield call(userApi.unFollowApi, action.data);
         yield put({
             type: UNFOLLOW_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
+        console.error(err);
         yield put({
             type: UNFOLLOW_FAILURE,
             error: err.response.data,
@@ -105,11 +122,75 @@ function* loadMyInfo(action) {
             type: LOAD_MY_INFO_SUCCESS,
             data: result.data,
         });
-    } catch {
+    } catch (err) {
+        console.error(err);
         yield put({
             type: LOAD_MY_INFO_FAILURE,
             error: err.response.data,
         });
+    }
+}
+function* changeNickname(action) {
+    try {
+        const result = yield call(userApi.changeNicknameApi, action.data);
+        yield put({
+            type: CHANGE_NICKNAME_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        console.error(err);
+        yield put({
+            type: CHANGE_NICKNAME_FAILURE,
+            error: err.response.data,
+        });
+    }
+}
+
+function* loadFollowers(action) {
+    try {
+        const result = yield call(userApi.loadFollowersApi, action.data);
+        yield put({
+            type: LOAD_FOLLOWERS_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        console.error(err);
+        yield {
+            type: LOAD_FOLLOWERS_FAILURE,
+            error: err.response.data,
+        };
+    }
+}
+
+function* loadFollowings(action) {
+    try {
+        const result = yield call(userApi.loadFollowingsApi, action.data);
+        yield put({
+            type: LOAD_FOLLOWINGS_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        console.error(err);
+        yield {
+            type: LOAD_FOLLOWINGS_FAILURE,
+            error: err.response.data,
+        };
+    }
+}
+
+function* removeFollower(action) {
+    try {
+        const result = yield call(userApi.removeFollowerApi, action.data);
+        yield put({
+            type: REMOVE_FOLLOWER_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        console.error(err);
+        yield {
+            type: REMOVE_FOLLOWER_FAILURE,
+            error: err.response.data,
+        };
     }
 }
 
@@ -131,6 +212,20 @@ function* watchUnFollow() {
 function* watchLoadMyInfo() {
     yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
 }
+function* watchChangeNickname() {
+    yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname);
+}
+function* watchLoadFollowers() {
+    yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers);
+}
+function* watchLoadFollowings() {
+    yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollowings);
+}
+
+function* watchRemoveFollower() {
+    yield takeLatest(REMOVE_FOLLOWER_REQUEST, removeFollower);
+}
+
 export default function* userSaga() {
     yield all([
         fork(watchLogin),
@@ -139,5 +234,9 @@ export default function* userSaga() {
         fork(watchFllow),
         fork(watchUnFollow),
         fork(watchLoadMyInfo),
+        fork(watchChangeNickname),
+        fork(watchLoadFollowers),
+        fork(watchLoadFollowings),
+        fork(watchRemoveFollower),
     ]);
 }

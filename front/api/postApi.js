@@ -34,3 +34,10 @@ export const unLikePostApi = async (data) => {
         method: "delete",
     });
 };
+
+export const deletePostApi = async (data) => {
+    return await axios({
+        url: `/post/${data}`,
+        method: "delete",
+    });
+};

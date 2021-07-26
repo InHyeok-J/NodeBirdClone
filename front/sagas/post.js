@@ -88,14 +88,14 @@ function* addComment(action) {
 
 function* removePost(action) {
     try {
-        yield delay(1000);
+        const result = yield call(postApi.deletePostApi, action.data);
         yield put({
             type: REMOVE_POST_SUCCESS,
-            data: action.data,
+            data: result.data,
         });
         yield put({
             type: REMOVE_POST_OF_ME,
-            data: action.data,
+            data: result.data,
         });
     } catch (err) {
         console.error(err);
