@@ -1,8 +1,15 @@
 import db from "../models";
+import { Op } from "sequelize";
 
 export const PostsPost = async (req, res, next) => {
     try {
+        const where = {};
+        if (parseInt(req.query.lastId, 10)) {
+            // 초기 로딩이 아닐때
+            where.id = { [Op.lt]: parseInt(req.query.lastId, 10) }; //보다 작은
+        }
         const posts = await db.Post.findAll({
+            where,
             limit: 10,
             order: [
                 ["createdAt", "DESC"],
