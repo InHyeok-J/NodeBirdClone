@@ -62,7 +62,7 @@ function* addPost(action) {
 
 function* loadPosts(action) {
     try {
-        const result = yield call(postApi.postLoadApi);
+        const result = yield call(postApi.postLoadApi, action.lastId);
 
         yield put({
             type: LOAD_POSTS_SUCCESS,

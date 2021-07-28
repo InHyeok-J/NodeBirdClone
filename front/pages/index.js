@@ -37,9 +37,11 @@ const Home = () => {
                 window.scrollY + document.documentElement.clientHeight >
                 document.documentElement.scrollHeight - 300
             ) {
+                const lastId = mainPosts[mainPosts.length - 1]?.id;
                 if (hasMorePosts && !loadPostLoading) {
                     dispatch({
                         type: LOAD_POSTS_REQUEST,
+                        lastId,
                     });
                 }
             }

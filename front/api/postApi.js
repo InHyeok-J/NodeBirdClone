@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const postLoadApi = async (data) => {
     return await axios({
-        url: "/posts",
+        url: `/posts?lastId=${data || 0}`,
         method: "get",
     });
 };
