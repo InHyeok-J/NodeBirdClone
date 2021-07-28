@@ -1,9 +1,16 @@
 import express from "express";
 import * as postController from "../controllers/postController";
 import * as AuthHandler from "../middlewares/AuthHandler";
+import { upload } from "../controllers/imageController";
+
 const router = express.Router();
 
-router.post("/", AuthHandler.isLoggedIn, postController.PostPost); //POST /post
+router.post(
+    "/",
+    AuthHandler.isLoggedIn,
+    upload.none(),
+    postController.PostPost
+); //POST /post
 router.post(
     //POST /post/1/comment
     "/:postId/comment",
@@ -16,5 +23,14 @@ router.delete(
     AuthHandler.isLoggedIn,
     postController.PostUnLike
 ); //DELETE /post/1/unlike
+router.delete("/:postId", postController.PostDelete); //DELETE /:1
+
+router.post(
+    "/images",
+    AuthHandler.isLoggedIn,
+    upload.array("image"),
+    postController.UpLoadImages
+);
+router.post("/:postId/retweet", AuthHandler.isLoggedIn, postController.retweet);
 
 export default router;

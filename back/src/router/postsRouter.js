@@ -4,6 +4,6 @@ import * as AuthHandler from "../middlewares/AuthHandler";
 
 const router = express.Router();
 
-router.get("/", AuthHandler.isLoggedIn, postsController.PostsPost);
+router.get("/", postsController.PostsPost);
 
 export default router;

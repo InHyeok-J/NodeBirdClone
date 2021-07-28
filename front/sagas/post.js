@@ -26,6 +26,12 @@ import {
     LIKE_POST_REQUEST,
     LIKE_POST_FAILURE,
     LIKE_POST_SUCCESS,
+    UPLOAD_IMAGES_REQUEST,
+    UPLOAD_IMAGES_FAILURE,
+    UPLOAD_IMAGES_SUCCESS,
+    RETWEET_REQUEST,
+    RETWEET_SUCCESS,
+    RETWEET_FAILURE,
 } from "../reducers/post";
 import {
     ADD_POST_TO_ME,
@@ -136,6 +142,37 @@ function* unLikePost(action) {
         });
     }
 }
+function* uploadImages(action) {
+    try {
+        const result = yield call(postApi.uploadImagesApi, action.data);
+        yield put({
+            type: UPLOAD_IMAGES_SUCCESS,
+            data: result.data,
+        });
+    } catch (err) {
+        console.error(err);
+        yield put({
+            type: UPLOAD_IMAGES_FAILURE,
+            error: err.response.data,
+        });
+    }
+}
+
+function* retweet(action) {
+    try {
+        const result = yield call(postApi.retweetApi, action.data);
+        yield put({
+            type: RETWEET_SUCCESS,
+            dtat: result.data,
+        });
+    } catch (err) {
+        console.error(err);
+        yield put({
+            type: RETWEET_FAILURE,
+            error: err.response.data,
+        });
+    }
+}
 function* watchAddPost() {
     yield takeLatest(ADD_POST_REQUEST, addPost);
 }
@@ -154,7 +191,12 @@ function* watchUnLikePost() {
 function* watchLikePost() {
     yield takeLatest(LIKE_POST_REQUEST, likePost);
 }
-
+function* watchUploadImages() {
+    yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
+}
+function* watchRetweet() {
+    yield takeLatest(RETWEET_REQUEST, retweet);
+}
 export default function* postSaga() {
     yield all([
         fork(watchAddPost),
@@ -163,5 +205,7 @@ export default function* postSaga() {
         fork(watchLoadPosts),
         fork(watchLikePost),
         fork(watchUnLikePost),
+        fork(watchUploadImages),
+        fork(watchRetweet),
     ]);
 }

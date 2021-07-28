@@ -9,9 +9,12 @@ const Home = () => {
     const dispatch = useDispatch();
 
     const { me } = useSelector((state) => state.user);
-    const { mainPosts, hasMorePosts, loadPostLoading } = useSelector(
-        (state) => state.post
-    );
+    const {
+        mainPosts,
+        hasMorePosts,
+        loadPostLoading,
+        retweetError,
+    } = useSelector((state) => state.post);
     console.log(mainPosts);
     useEffect(() => {
         dispatch({
@@ -21,6 +24,12 @@ const Home = () => {
             type: LOAD_POSTS_REQUEST,
         });
     }, []);
+
+    useEffect(() => {
+        if (retweetError) {
+            alert(retweetError);
+        }
+    }, [retweetError]);
 
     useEffect(() => {
         function onScroll() {

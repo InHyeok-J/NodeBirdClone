@@ -10,6 +10,19 @@ export const PostsPost = async (req, res, next) => {
             ],
             include: [
                 {
+                    model: db.Post,
+                    as: "Retweet",
+                    include: [
+                        {
+                            model: db.User,
+                            attributes: ["id", "nickname"],
+                        },
+                        {
+                            model: db.Image,
+                        },
+                    ],
+                },
+                {
                     model: db.User,
                     attributes: ["id", "nickname"],
                 },
@@ -32,7 +45,6 @@ export const PostsPost = async (req, res, next) => {
                 },
             ],
         });
-        console.log(posts);
         res.status(200).json(posts);
     } catch (err) {
         console.error(err);

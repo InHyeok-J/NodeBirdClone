@@ -41,3 +41,18 @@ export const deletePostApi = async (data) => {
         method: "delete",
     });
 };
+
+export const uploadImagesApi = async (data) => {
+    return await axios({
+        url: "/post/images",
+        method: "post",
+        data: data,
+    });
+};
+
+export const retweetApi = async (data) => {
+    return await axios({
+        url: `/post/${data}/retweet`,
+        method: "post",
+    });
+};

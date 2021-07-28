@@ -7,6 +7,7 @@ import passport from "passport";
 import cookieParser from "cookie-parser";
 import passportConfig from "./configs/passport";
 import morgan from "morgan";
+import path from "path";
 import * as ErrorHandler from "./middlewares/ErrorHandler";
 
 import postRouter from "./router/postRouter";
@@ -34,6 +35,7 @@ app.use(
     })
 );
 app.use(morgan("dev"));
+app.use("/", express.static(path.join(__dirname, "..", "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // 받은 데이터를 req에 넣어줌.
 app.use(cookieParser(env.COOKIE_SECRET));
@@ -46,12 +48,6 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.get("/", (req, res, next) => {
-    console.log("패스포트 값 확인", req.session.passport);
-    console.log("유저 값 확인", req.user.id);
-    res.send("안녕");
-});
 
 //router
 app.use("/post", postRouter);

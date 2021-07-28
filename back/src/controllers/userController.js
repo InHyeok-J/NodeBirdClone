@@ -120,3 +120,102 @@ export const LogOut = (req, res, next) => {
         }
     });
 };
+
+export const ChangeNickname = async (req, res, next) => {
+    try {
+        await db.User.update(
+            {
+                nickname: req.body.nickname,
+            },
+            {
+                where: { id: req.user.id },
+            }
+        );
+        res.status(200).json({ nickname: req.body.nickname });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+export const Follow = async (req, res, next) => {
+    try {
+        const user = await db.User.findOne({
+            where: { id: parseInt(req.params.userId, 10) },
+        });
+        if (!user) {
+            return res.status(404).send("없는 사람을 팔로우 할수 없습니다.");
+        }
+        await user.addFollowers(req.user.id);
+        res.status(200).send({ UserId: parseInt(req.params.userId, 10) });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+export const unFollow = async (req, res, next) => {
+    try {
+        const user = await db.User.findOne({
+            where: { id: parseInt(req.params.userId, 10) },
+        });
+        if (!user) {
+            return res
+                .status(404)
+                .send("없는 사람을 팔로우취소 할수 없습니다.");
+        }
+        await user.removeFollowers(req.user.id);
+        res.status(200).send({ UserId: parseInt(req.params.userId, 10) });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+export const FollowList = async (req, res, next) => {
+    try {
+        const user = await db.User.findOne({
+            where: { id: req.user.id },
+        });
+        if (!user) {
+            return res.status(404).send("없는 사람입니다.");
+        }
+        const followers = await user.getFollowers();
+        res.status(200).json(followers);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+export const FollowingList = async (req, res, next) => {
+    try {
+        const user = await db.User.findOne({
+            where: { id: req.user.id },
+        });
+        if (!user) {
+            return res.status(404).send("없는 사람입니다.");
+        }
+        const followings = await user.getFollowings();
+        res.status(200).json(followings);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+export const RemoveFollower = async (req, res, next) => {
+    try {
+        console.log(req.params.userId);
+        const user = await db.User.findOne({
+            where: { id: parseInt(req.params.userId, 10) },
+        });
+        if (!user) {
+            return res.status(404).send("없는 사람을 차단할 수는 없습니다");
+        }
+        await user.removeFollowing(req.user.id);
+        res.status(200).send({ UserId: parseInt(req.params.userId, 10) });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
