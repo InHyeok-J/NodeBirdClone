@@ -5,6 +5,9 @@ import PostForm from "../components/PostForm";
 import PostCard from "../components/PostCard";
 import { LOAD_POSTS_REQUEST } from "../reducers/post";
 import { LOAD_MY_INFO_REQUEST } from "../reducers/user";
+import { END } from "redux-saga";
+import wrapper from "../store/configureStore";
+import axios from "axios";
 const Home = () => {
     const dispatch = useDispatch();
 
@@ -16,14 +19,6 @@ const Home = () => {
         retweetError,
     } = useSelector((state) => state.post);
     console.log(mainPosts);
-    useEffect(() => {
-        dispatch({
-            type: LOAD_MY_INFO_REQUEST,
-        });
-        dispatch({
-            type: LOAD_POSTS_REQUEST,
-        });
-    }, []);
 
     useEffect(() => {
         if (retweetError) {
@@ -60,4 +55,23 @@ const Home = () => {
         </AppLayout>
     );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(
+    (context) => async (test, res) => {
+        const cookie = test.req ? test.req.headers.cookie : "";
+        axios.defaults.headers.Cookie = "";
+        if (test.req && cookie) {
+            axios.defaults.headers.Cookie = cookie;
+        }
+        console.log("컨텍스트", context);
+        context.dispatch({
+            type: LOAD_MY_INFO_REQUEST,
+        });
+        context.dispatch({
+            type: LOAD_POSTS_REQUEST,
+        });
+        context.dispatch(END);
+        await context.sagaTask.toPromise();
+    }
+);
 export default Home;

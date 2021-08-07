@@ -3,6 +3,7 @@ import passport from "passport";
 import bcrypt from "bcrypt";
 
 export const GetUser = async (req, res, next) => {
+    console.log(req.headers);
     try {
         if (req.user) {
             const user = await db.User.findOne({

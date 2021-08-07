@@ -31,8 +31,6 @@ const initialState = {
     removefollowerDone: false,
     removefollowerError: null,
     me: null,
-    signUpData: {},
-    loginData: {},
 };
 
 export const loginRequestAction = (data) => {
